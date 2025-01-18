@@ -1,11 +1,10 @@
 package mc.fuckoka.economyapi.event
 
-import mc.fuckoka.economyapi.model.Money
-import mc.fuckoka.economyapi.model.Wallet
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
+import java.util.*
 
-class PlayerPaidMoneyEvent(val from: Wallet?, val to: Wallet?, val amount: Money) : Event() {
+class PlayerPaidMoneyEvent(val from: UUID?, val to: UUID?, val amount: Int) : Event() {
     companion object {
         private val handlers = HandlerList()
 
