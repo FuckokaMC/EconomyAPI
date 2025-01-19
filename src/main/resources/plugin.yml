@@ -6,6 +6,9 @@ author: deceitya
 website: https://github.com/FuckokaMC/EconomyAPI
 api-version: 1.21.4
 load: POSTWORLD
+libraries:
+  - com.zaxxer:HikariCP:6.2.1
+  - com.mysql:mysql-connector-j:9.1.0
 permissions:
   economyapi.commands.mymoney:
     default: true
