@@ -3,6 +3,7 @@ package mc.fuckoka.economyapi.config
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
+import java.sql.SQLException
 
 object Database {
     private lateinit var dataSource: HikariDataSource
@@ -23,5 +24,20 @@ object Database {
 
     fun close() {
         dataSource.close()
+    }
+
+    inline fun transaction(connection: Connection, block: () -> Unit): Boolean {
+        try {
+            connection.autoCommit = false
+            block()
+            connection.commit()
+            return true
+        } catch (e: SQLException) {
+            connection.rollback()
+            return false
+        } finally {
+            connection.autoCommit = true
+            connect().close()
+        }
     }
 }
