@@ -1,4 +1,4 @@
-package mc.fuckoka.economyapi.event
+package mc.fuckoka.economyapi.domain.event
 
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList

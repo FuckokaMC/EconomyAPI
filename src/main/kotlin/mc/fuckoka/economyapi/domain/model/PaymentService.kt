@@ -1,6 +1,6 @@
-package mc.fuckoka.economyapi.model
+package mc.fuckoka.economyapi.domain.model
 
-import mc.fuckoka.economyapi.event.PlayerPaidMoneyEvent
+import mc.fuckoka.economyapi.domain.event.PlayerPaidMoneyEvent
 
 object PaymentService {
     /**

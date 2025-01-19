@@ -1,4 +1,4 @@
-package mc.fuckoka.economyapi.model
+package mc.fuckoka.economyapi.domain.model
 
 import java.util.*
 
