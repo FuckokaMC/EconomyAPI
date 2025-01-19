@@ -1,0 +1,55 @@
+name: EconomyAPI
+version: 1.0.0
+main: mc.fuckoka.economyapi.EconomyAPI
+description: 経済プラグイン
+author: deceitya
+website: https://github.com/FuckokaMC/EconomyAPI
+api-version: 1.21.4
+load: POSTWORLD
+permissions:
+  economyapi.commands.mymoney:
+    default: true
+  economyapi.commands.paymoney:
+    default: op
+  economyapi.commands.showmoney:
+    default: op
+  economyapi.commands.setmoney:
+    default: op
+  economyapi.commands.givemoney:
+    default: op
+  economyapi.commands.takemoney:
+    default: op
+  economyapi.commands.logmoney:
+    default: true
+  economyapi.commands.logmoney.other:
+    description: 他のプレイヤーのログを見る
+    default: op
+commands:
+  mymoney:
+    description: 自分の所持金を表示する。
+    permission: economyapi.commands.mymoney
+    usage: /mymoney
+  paymoney:
+    description: プレイヤーにお金を支払う。
+    permission: economyapi.commands.paymoney
+    usage: /paymoney <プレイヤー名> <金額> [理由]
+  showmoney:
+    description: プレイヤーのお金を表示する。
+    permission: economyapi.commands.showmoney
+    usage: /showmoney <プレイヤー名> <金額>
+  setmoney:
+    description: プレイヤーの所持金を設定する。
+    permission: economyapi.commands.setmoney
+    usage: /setmoney <プレイヤー名> <金額> [理由]
+  givemoney:
+    description: プレイヤーの所持金を増やす。
+    permission: economyapi.commands.givemoney
+    usage: /givemoney <プレイヤー名> <金額> [理由]
+  takemoney:
+    description: プレイヤーの所持金を減らす。
+    permission: economyapi.commands.takemoney
+    usage: /takemoney <プレイヤー名> <金額> [理由]
+  logmoney:
+    description: 所持金のログを表示する。
+    permission: economyapi.commands.logmoney
+    usage: /logmoney [ページ]
