@@ -37,7 +37,6 @@ object Database {
             return false
         } finally {
             connection.autoCommit = true
-            connect().close()
         }
     }
 }
