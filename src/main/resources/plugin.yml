@@ -10,49 +10,26 @@ libraries:
   - com.zaxxer:HikariCP:6.2.1
   - com.mysql:mysql-connector-j:9.1.0
 permissions:
-  economyapi.commands.mymoney:
+  economyapi.commands.money.show:
     default: true
-  economyapi.commands.paymoney:
+  economyapi.commands.money.show.other:
     default: op
-  economyapi.commands.showmoney:
+  economyapi.commands.money.pay:
     default: op
-  economyapi.commands.setmoney:
+  economyapi.commands.money.set:
     default: op
-  economyapi.commands.givemoney:
+  economyapi.commands.money.give:
     default: op
-  economyapi.commands.takemoney:
+  economyapi.commands.money.take:
     default: op
-  economyapi.commands.logmoney:
+  economyapi.commands.money.log:
     default: true
-  economyapi.commands.logmoney.other:
-    description: 他のプレイヤーのログを見る
+  economyapi.commands.money.log.other:
     default: op
+  economyapi.commands.money.help:
+    default: true
 commands:
-  mymoney:
-    description: 自分の所持金を表示する。
-    permission: economyapi.commands.mymoney
-    usage: /mymoney
-  paymoney:
-    description: プレイヤーにお金を支払う。
-    permission: economyapi.commands.paymoney
-    usage: /paymoney <プレイヤー名> <金額> [理由]
-  showmoney:
-    description: プレイヤーのお金を表示する。
-    permission: economyapi.commands.showmoney
-    usage: /showmoney <プレイヤー名> <金額>
-  setmoney:
-    description: プレイヤーの所持金を設定する。
-    permission: economyapi.commands.setmoney
-    usage: /setmoney <プレイヤー名> <金額> [理由]
-  givemoney:
-    description: プレイヤーの所持金を増やす。
-    permission: economyapi.commands.givemoney
-    usage: /givemoney <プレイヤー名> <金額> [理由]
-  takemoney:
-    description: プレイヤーの所持金を減らす。
-    permission: economyapi.commands.takemoney
-    usage: /takemoney <プレイヤー名> <金額> [理由]
-  logmoney:
-    description: 所持金のログを表示する。
-    permission: economyapi.commands.logmoney
-    usage: /logmoney [ページ]
+  money:
+    description: お金コマンド
+    permission: economyapi.commands.money.show
+    usage: /money help
