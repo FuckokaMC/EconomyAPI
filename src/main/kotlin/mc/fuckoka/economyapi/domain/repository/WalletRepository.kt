@@ -5,9 +5,9 @@ import mc.fuckoka.economyapi.domain.model.WalletID
 import java.util.*
 
 interface WalletRepository {
-    fun find(id: WalletID): Wallet
+    fun find(id: WalletID): Wallet?
 
-    fun findBy(owner: UUID): Wallet
+    fun findBy(owner: UUID): Wallet?
 
-    fun store(wallet: Wallet)
+    fun store(owner: UUID)
 }
