@@ -2,7 +2,7 @@ package mc.fuckoka.economyapi.domain.model
 
 import java.util.*
 
-class Player(val id: UUID, money: Money) {
+class Wallet(val id: WalletID, val owner: UUID, money: Money) {
     var money = money
         private set
 
