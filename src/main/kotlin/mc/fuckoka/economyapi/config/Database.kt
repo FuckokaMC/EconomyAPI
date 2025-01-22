@@ -3,10 +3,15 @@ package mc.fuckoka.economyapi.config
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
-import java.sql.SQLException
 
 object Database {
     private lateinit var dataSource: HikariDataSource
+
+    /**
+     * Database.transaction{}の外だとnullになります
+     */
+    var connection: Connection? = null
+        private set
 
     fun init(driver: String, url: String, id: String, pw: String) {
         val config = HikariConfig().apply {
@@ -18,25 +23,26 @@ object Database {
         dataSource = HikariDataSource(config)
     }
 
-    fun connect(): Connection {
-        return dataSource.connection
+    fun <T> transaction(block: () -> T): T {
+        var result: T? = null
+
+        connection = dataSource.connection
+        try {
+            connection!!.autoCommit = false
+            result = block()
+            connection!!.commit()
+        } catch (e: Exception) {
+            connection!!.rollback()
+        } finally {
+            connection!!.autoCommit = true
+            connection!!.close()
+        }
+        connection = null
+
+        return result!!
     }
 
     fun close() {
         dataSource.close()
-    }
-
-    inline fun transaction(connection: Connection, block: () -> Unit): Boolean {
-        try {
-            connection.autoCommit = false
-            block()
-            connection.commit()
-            return true
-        } catch (e: SQLException) {
-            connection.rollback()
-            return false
-        } finally {
-            connection.autoCommit = true
-        }
     }
 }
