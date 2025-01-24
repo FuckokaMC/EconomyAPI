@@ -1,18 +1,23 @@
 package mc.fuckoka.economyapi.application
 
-import mc.fuckoka.economyapi.config.Database
+import mc.fuckoka.dbconnector.Database
 import mc.fuckoka.economyapi.domain.model.Money
-import mc.fuckoka.economyapi.domain.model.Wallet
 import mc.fuckoka.economyapi.domain.repository.MoneyTransactionHistoryRepository
+import mc.fuckoka.economyapi.domain.repository.WalletRepository
+import java.sql.SQLException
 import java.util.*
 
-// TODO:バカ過ぎて適切な名称が思いつかない
-class CreateMoneyDataUseCase(private val historyRepository: MoneyTransactionHistoryRepository) {
+// バカ過ぎて適切な名称が思いつかない
+class CreateMoneyDataUseCase(
+    private val walletRepository: WalletRepository,
+    private val historyRepository: MoneyTransactionHistoryRepository
+) {
     fun execute(player: UUID, defaultMoney: Int = 0) {
-        val model = Wallet(player, Money(0))
-        val moneyTransaction = model.credited(Money(defaultMoney))
+        Database.transaction {
+            walletRepository.store(player)
+            val wallet = walletRepository.findBy(player) ?: throw SQLException()
 
-        Database.transaction(Database.connect()) {
+            val moneyTransaction = wallet.credited(Money(defaultMoney))
             historyRepository.store(moneyTransaction)
         }
     }

@@ -22,13 +22,21 @@ repositories {
             password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
         }
     }
+    maven {
+        url = uri("https://maven.pkg.github.com/fuckokamc/DBConnector")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
     compileOnly("com.zaxxer:HikariCP:6.2.1")
-    compileOnly("com.mysql:mysql-connector-j:9.1.0")
+    compileOnly("com.mysql:mysql-connector-j:9.2.0")
     compileOnly("mc.fuckoka:command-framework:0.1.0")
+    compileOnly("mc.fuckoka:db-connector:1.0.0")
     testImplementation(kotlin("test"))
 }
 
