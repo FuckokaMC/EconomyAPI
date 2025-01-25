@@ -12,7 +12,7 @@ class GiveMoneyUseCase(
 ) {
     fun execute(player: UUID, amount: Int): Boolean {
         return Database.transaction {
-            val wallet = walletRepository.findBy(player) ?: throw RuntimeException()
+            val wallet = walletRepository.findBy(player) ?: return@transaction false
 
             val money = Money(amount)
             // お金を受け取れない場合はfalseを返す
