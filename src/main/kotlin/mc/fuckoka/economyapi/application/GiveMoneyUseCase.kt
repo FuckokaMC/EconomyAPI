@@ -9,15 +9,20 @@ import java.util.UUID
 class GiveMoneyUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
-)  {
-    fun execute(player: UUID, amount: Int) {
-        Database.transaction {
+) {
+    fun execute(player: UUID, amount: Int): Boolean {
+        return Database.transaction {
             val wallet = walletRepository.findBy(player) ?: throw RuntimeException()
 
+            val money = Money(amount)
+            // お金を受け取れない場合はfalseを返す
+            if (!wallet.canCredited(money)) return@transaction false
             val moneyTransaction = wallet.credited(Money(amount))
 
             historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
+
+            return@transaction true
         }
     }
 }
