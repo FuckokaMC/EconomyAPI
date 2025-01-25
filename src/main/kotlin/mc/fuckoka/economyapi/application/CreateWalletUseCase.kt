@@ -14,11 +14,16 @@ class CreateWalletUseCase(
 ) {
     fun execute(player: UUID, defaultMoney: Int = 0) {
         Database.transaction {
-            walletRepository.store(Wallet.NewWallet(player, Money(defaultMoney)))
+            // wallet作成
+            walletRepository.store(Wallet.NewWallet(player))
 
+            // 初期所持金を与える
             val wallet = walletRepository.findBy(player) ?: throw SQLException()
             val moneyTransaction = wallet.credited(Money(defaultMoney))
+
+            // 履歴とwallet自体の保存
             historyRepository.store(moneyTransaction)
+            walletRepository.store(wallet)
         }
     }
 }

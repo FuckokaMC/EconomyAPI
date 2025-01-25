@@ -40,5 +40,5 @@ open class Wallet(val id: WalletID, val owner: UUID, money: Money) {
         return MoneyTransaction(null, null, this, amount, reason)
     }
 
-    class NewWallet(owner: UUID, money: Money) : Wallet(WalletID(0), owner, money)
+    class NewWallet(owner: UUID) : Wallet(WalletID(0), owner, Money(0))
 }
