@@ -2,12 +2,19 @@ package mc.fuckoka.economyapi.domain.repository
 
 import mc.fuckoka.economyapi.domain.model.MoneyTransaction
 import mc.fuckoka.economyapi.domain.model.WalletID
-import java.util.*
 
 interface MoneyTransactionHistoryRepository {
-    fun find(id: WalletID): List<MoneyTransaction>
+    /**
+     * 履歴取得
+     *
+     * @param id
+     * @param start  初期レコード位置
+     * @param offset 取得件数
+     * @return
+     */
+    fun find(id: WalletID, start: Int? = null, offset: Int? = null): List<MoneyTransaction>
 
-    fun findBy(owner: UUID): List<MoneyTransaction>
+    fun count(id: WalletID): Int
 
     fun store(event: MoneyTransaction)
 }
