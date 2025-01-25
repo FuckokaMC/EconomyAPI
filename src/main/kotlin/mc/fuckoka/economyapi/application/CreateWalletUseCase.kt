@@ -5,7 +5,6 @@ import mc.fuckoka.economyapi.domain.model.Money
 import mc.fuckoka.economyapi.domain.model.Wallet
 import mc.fuckoka.economyapi.domain.repository.MoneyTransactionHistoryRepository
 import mc.fuckoka.economyapi.domain.repository.WalletRepository
-import java.sql.SQLException
 import java.util.*
 
 class CreateWalletUseCase(
