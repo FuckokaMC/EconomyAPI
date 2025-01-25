@@ -2,7 +2,7 @@ package mc.fuckoka.economyapi.domain.model
 
 import java.util.*
 
-class Wallet(val id: WalletID, val owner: UUID, money: Money) {
+open class Wallet(val id: WalletID, val owner: UUID, money: Money) {
     var money = money
         private set
 
@@ -39,4 +39,6 @@ class Wallet(val id: WalletID, val owner: UUID, money: Money) {
         money = kotlin.runCatching { Money(money.value + amount.value) }.getOrElse { Money(Money.MAX_VALUE) }
         return MoneyTransaction(null, null, this, amount, reason)
     }
+
+    class NewWallet(owner: UUID, money: Money) : Wallet(WalletID(0), owner, money)
 }

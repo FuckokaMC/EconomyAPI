@@ -9,5 +9,5 @@ interface WalletRepository {
 
     fun findBy(owner: UUID): Wallet?
 
-    fun store(owner: UUID)
+    fun store(wallet: Wallet)
 }
