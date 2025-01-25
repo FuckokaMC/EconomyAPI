@@ -18,7 +18,7 @@ class CreateWalletUseCase(
             walletRepository.store(Wallet.NewWallet(player))
 
             // 初期所持金を与える
-            val wallet = walletRepository.findBy(player) ?: throw SQLException()
+            val wallet = walletRepository.findBy(player) ?: throw RuntimeException()
             val moneyTransaction = wallet.credited(Money(defaultMoney))
 
             // 履歴とwallet自体の保存
