@@ -8,6 +8,6 @@ object TransactionService {
         if (!from.canPay(amount) || !to.canCredited(amount)) return null
         from.pay(amount)
         to.credited(amount)
-        return MoneyTransaction(null, from.id, to.id, amount, reason = reason)
+        return MoneyTransaction.NewMoneyTransaction(from.id, to.id, amount, reason)
     }
 }

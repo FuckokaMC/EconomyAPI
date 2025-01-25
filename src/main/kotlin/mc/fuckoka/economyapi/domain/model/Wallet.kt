@@ -1,6 +1,5 @@
 package mc.fuckoka.economyapi.domain.model
 
-import java.time.LocalDateTime
 import java.util.*
 
 open class Wallet(val id: WalletID, val owner: UUID, money: Money) {
@@ -19,7 +18,7 @@ open class Wallet(val id: WalletID, val owner: UUID, money: Money) {
      */
     fun pay(amount: Money, reason: Reason? = null): MoneyTransaction {
         money = Money(money.value - amount.value)
-        return MoneyTransaction(null, this.id, null, amount, reason = reason)
+        return MoneyTransaction.NewMoneyTransaction(this.id, null, amount, reason)
     }
 
     /**
@@ -38,7 +37,7 @@ open class Wallet(val id: WalletID, val owner: UUID, money: Money) {
      */
     fun credited(amount: Money, reason: Reason? = null): MoneyTransaction {
         money = kotlin.runCatching { Money(money.value + amount.value) }.getOrElse { Money(Money.MAX_VALUE) }
-        return MoneyTransaction(null, null, this.id, amount, reason = reason)
+        return MoneyTransaction.NewMoneyTransaction(null, this.id, amount, reason)
     }
 
     class NewWallet(owner: UUID) : Wallet(WalletID(0), owner, Money(0))
