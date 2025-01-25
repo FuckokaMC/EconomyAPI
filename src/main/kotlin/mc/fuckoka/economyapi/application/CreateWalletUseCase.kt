@@ -8,8 +8,7 @@ import mc.fuckoka.economyapi.domain.repository.WalletRepository
 import java.sql.SQLException
 import java.util.*
 
-// バカ過ぎて適切な名称が思いつかない
-class CreateMoneyDataUseCase(
+class CreateWalletUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
