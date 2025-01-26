@@ -28,6 +28,8 @@ permissions:
     default: op
   economyapi.commands.money.help:
     default: true
+  economyapi.commands.validate:
+    default: op
 commands:
   money:
     description: お金コマンド
