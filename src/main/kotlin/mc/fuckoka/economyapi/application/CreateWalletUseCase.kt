@@ -13,6 +13,8 @@ class CreateWalletUseCase(
 ) {
     fun execute(player: UUID, defaultMoney: Int = 0) {
         Database.transaction {
+            if (walletRepository.findBy(player) != null) return@transaction
+
             // wallet作成
             walletRepository.store(Wallet.NewWallet(player))
 
