@@ -28,7 +28,7 @@ permissions:
     default: op
   economyapi.commands.money.help:
     default: true
-  economyapi.commands.validate:
+  economyapi.commands.money.validate:
     default: op
 commands:
   money:
