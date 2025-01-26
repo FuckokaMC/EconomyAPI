@@ -95,7 +95,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
             """
                 |INSERT INTO money_transactions (from, to, amount, reason, created_at) VALUES
                 |(?, ?, ?, ?, ?);
-            """.trimIndent()
+            """.trimMargin()
         )
 
         stmt.use {
