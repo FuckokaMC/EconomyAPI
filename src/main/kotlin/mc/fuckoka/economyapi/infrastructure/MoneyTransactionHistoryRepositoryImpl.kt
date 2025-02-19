@@ -20,17 +20,17 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
         val connection = Database.connection ?: throw SQLException()
         val stmt = connection.prepareStatement(
             """
-                |SELECT
-                |    id,
-                |    from,
-                |    to,
-                |    amount,
-                |    reason,
-                |    created_at
-                |FROM money_transactions
-                |WHERE from = ? OR to = ?
-                |ORDER BY id DESC
-                |""" + if (isPaging) "LIMIT ?, ?;" else ";".trimMargin()
+                    |SELECT
+                    |    id,
+                    |    from,
+                    |    to,
+                    |    amount,
+                    |    reason,
+                    |    created_at
+                    |FROM money_transactions
+                    |WHERE from = ? OR to = ?
+                    |ORDER BY id DESC
+                 """.trimMargin() + if (isPaging) " LIMIT ?, ?;" else ";"
         )
         stmt.use {
             stmt.setLong(1, id.value)
