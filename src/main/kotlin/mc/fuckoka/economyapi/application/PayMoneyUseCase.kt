@@ -33,9 +33,9 @@ class PayMoneyUseCase(
                 if (reason != null) Reason(reason) else null
             ) ?: return@transaction null
 
-            historyRepository.store(moneyTransaction)
             walletRepository.store(fromWallet)
             walletRepository.store(toWallet)
+            historyRepository.store(moneyTransaction)
 
             return@transaction Pair(fromWallet.money.value, toWallet.money.value)
         }

@@ -28,8 +28,8 @@ class GiveMoneyUseCase(
             if (!wallet.canCredited(money)) return@transaction null
             val moneyTransaction = wallet.credited(Money(amount), if (reason != null) Reason(reason) else null)
 
-            historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
+            historyRepository.store(moneyTransaction)
 
             return@transaction wallet.money.value
         }

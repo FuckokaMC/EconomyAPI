@@ -8,8 +8,7 @@ import mc.fuckoka.economyapi.domain.repository.WalletRepository
 import java.util.*
 
 class TakeMoneyUseCase(
-    private val walletRepository: WalletRepository,
-    private val historyRepository: MoneyTransactionHistoryRepository
+    private val walletRepository: WalletRepository, private val historyRepository: MoneyTransactionHistoryRepository
 ) {
     /**
      * 所持金を減らす
@@ -28,8 +27,8 @@ class TakeMoneyUseCase(
             if (!wallet.canPay(money)) return@transaction null
             val moneyTransaction = wallet.pay(money, if (reason != null) Reason(reason) else null)
 
-            historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
+            historyRepository.store(moneyTransaction)
 
             return@transaction wallet.money.value
         }

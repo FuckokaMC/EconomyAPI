@@ -23,8 +23,8 @@ class CreateWalletUseCase(
             val moneyTransaction = wallet.credited(Money(defaultMoney))
 
             // 履歴とwallet自体の保存
-            historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
+            historyRepository.store(moneyTransaction)
 
             return@transaction true
         }
