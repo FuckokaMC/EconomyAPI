@@ -12,23 +12,32 @@ class PayMoneyUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
-    fun execute(from: UUID, to: UUID, amount: Int, reason: String? = null): Boolean {
+    /**
+     * 支払う
+     *
+     * @param from
+     * @param to
+     * @param amount
+     * @param reason
+     * @return 支払い後の所持金
+     */
+    fun execute(from: UUID, to: UUID, amount: Int, reason: String? = null): Pair<Int, Int>? {
         return Database.transaction {
-            val fromWallet = walletRepository.findBy(from) ?: return@transaction false
-            val toWallet = walletRepository.findBy(to) ?: return@transaction false
+            val fromWallet = walletRepository.findBy(from) ?: return@transaction null
+            val toWallet = walletRepository.findBy(to) ?: return@transaction null
 
             val moneyTransaction = TransactionService.pay(
                 fromWallet,
                 toWallet,
                 Money(amount),
                 if (reason != null) Reason(reason) else null
-            ) ?: return@transaction false
+            ) ?: return@transaction null
 
             historyRepository.store(moneyTransaction)
             walletRepository.store(fromWallet)
             walletRepository.store(toWallet)
 
-            return@transaction true
+            return@transaction Pair(fromWallet.money.value, toWallet.money.value)
         }
     }
 }

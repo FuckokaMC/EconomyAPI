@@ -11,19 +11,27 @@ class TakeMoneyUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
-    fun execute(player: UUID, amount: Int, reason: String? = null): Boolean {
+    /**
+     * 所持金を減らす
+     *
+     * @param player
+     * @param amount
+     * @param reason
+     * @return 減少後の所持金
+     */
+    fun execute(player: UUID, amount: Int, reason: String? = null): Int? {
         return Database.transaction {
-            val wallet = walletRepository.findBy(player) ?: return@transaction false
+            val wallet = walletRepository.findBy(player) ?: return@transaction null
 
             val money = Money(amount)
-            // お金を支払えない場合はfalseを返す
-            if (!wallet.canPay(money)) return@transaction false
+            // お金を支払えない場合はnullを返す
+            if (!wallet.canPay(money)) return@transaction null
             val moneyTransaction = wallet.pay(money, if (reason != null) Reason(reason) else null)
 
             historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
 
-            return@transaction true
+            return@transaction wallet.money.value
         }
     }
 }

@@ -11,19 +11,27 @@ class GiveMoneyUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
-    fun execute(player: UUID, amount: Int, reason: String? = null): Boolean {
+    /**
+     * 所持金を増やす
+     *
+     * @param player
+     * @param amount
+     * @param reason
+     * @return 増加後の所持金
+     */
+    fun execute(player: UUID, amount: Int, reason: String? = null): Int? {
         return Database.transaction {
-            val wallet = walletRepository.findBy(player) ?: return@transaction false
+            val wallet = walletRepository.findBy(player) ?: return@transaction null
 
             val money = Money(amount)
             // お金を受け取れない場合はfalseを返す
-            if (!wallet.canCredited(money)) return@transaction false
+            if (!wallet.canCredited(money)) return@transaction null
             val moneyTransaction = wallet.credited(Money(amount), if (reason != null) Reason(reason) else null)
 
             historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
 
-            return@transaction true
+            return@transaction wallet.money.value
         }
     }
 }

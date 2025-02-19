@@ -11,9 +11,9 @@ class CreateWalletUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
-    fun execute(player: UUID, defaultMoney: Int = 0) {
-        Database.transaction {
-            if (walletRepository.findBy(player) != null) return@transaction
+    fun execute(player: UUID, defaultMoney: Int = 0): Boolean {
+        return Database.transaction {
+            if (walletRepository.findBy(player) != null) return@transaction false
 
             // wallet作成
             walletRepository.store(Wallet.NewWallet(player))
@@ -25,6 +25,8 @@ class CreateWalletUseCase(
             // 履歴とwallet自体の保存
             historyRepository.store(moneyTransaction)
             walletRepository.store(wallet)
+
+            return@transaction true
         }
     }
 }
