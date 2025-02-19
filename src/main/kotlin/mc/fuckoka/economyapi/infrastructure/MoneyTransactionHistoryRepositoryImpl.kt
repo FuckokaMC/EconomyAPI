@@ -22,13 +22,13 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
             """
                     |SELECT
                     |    id,
-                    |    from,
-                    |    to,
+                    |    player,
+                    |    payee,
                     |    amount,
                     |    reason,
                     |    created_at
                     |FROM money_transactions
-                    |WHERE from = ? OR to = ?
+                    |WHERE player = ? OR payee = ?
                     |ORDER BY id DESC
                  """.trimMargin() + if (isPaging) " LIMIT ?, ?;" else ";"
         )
@@ -43,8 +43,8 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 while (resultSet.next()) {
-                    val from = resultSet.getObject("from") as Long?
-                    val to = resultSet.getObject("to") as Long?
+                    val from = resultSet.getObject("player") as Long?
+                    val to = resultSet.getObject("payee") as Long?
                     val reason = resultSet.getObject("reason") as String?
                     result.add(
                         MoneyTransaction(
@@ -74,7 +74,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
                 |SELECT
                 |    COUNT(*)
                 |FROM money_transactions
-                |WHERE from = ? OR to = ?;
+                |WHERE player = ? OR payee = ?;
             """.trimMargin()
         )
 
@@ -93,7 +93,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
 
         val stmt = connection.prepareStatement(
             """
-                |INSERT INTO money_transactions (from, to, amount, reason, created_at) VALUES
+                |INSERT INTO money_transactions (player, payee, amount, reason, created_at) VALUES
                 |(?, ?, ?, ?, ?);
             """.trimMargin()
         )
