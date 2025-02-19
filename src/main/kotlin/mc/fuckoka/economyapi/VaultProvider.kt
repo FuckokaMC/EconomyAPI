@@ -1,11 +1,13 @@
 package mc.fuckoka.economyapi
 
+import mc.fuckoka.economyapi.application.*
 import mc.fuckoka.economyapi.domain.repository.MoneyTransactionHistoryRepository
 import mc.fuckoka.economyapi.domain.repository.WalletRepository
 import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import kotlin.math.floor
 
 class VaultProvider(
     private val plugin: EconomyAPI,
@@ -41,40 +43,73 @@ class VaultProvider(
     }
 
     override fun hasAccount(player: OfflinePlayer): Boolean {
-        TODO("Not yet implemented")
+        return FindMoneyUseCase(walletRepository).execute(player.uniqueId) != null
     }
 
     override fun getBalance(player: OfflinePlayer): Double {
-        TODO("Not yet implemented")
+        return (FindMoneyUseCase(walletRepository).execute(player.uniqueId) ?: 0).toDouble()
     }
 
     override fun has(player: OfflinePlayer, amount: Double): Boolean {
-        TODO("Not yet implemented")
+        val balance = FindMoneyUseCase(walletRepository).execute(player.uniqueId)
+        return if (balance == null) false else amount <= balance
     }
 
     override fun withdrawPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        TODO("Not yet implemented")
+        val fAmount = floor(amount)
+        val balance = TakeMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
+        if (balance != null) {
+            return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+        }
+
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
     }
 
     override fun depositPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        TODO("Not yet implemented")
+        val fAmount = floor(amount)
+        val balance = GiveMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
+        if (balance != null) {
+            return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+        }
+
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
+    }
+
+    fun pay(from: OfflinePlayer, to: OfflinePlayer, amount: Double): Pair<EconomyResponse, EconomyResponse> {
+        val fAmount = floor(amount)
+        val balance =
+            PayMoneyUseCase(walletRepository, historyRepository).execute(from.uniqueId, to.uniqueId, fAmount.toInt())
+        if (balance != null) {
+            return Pair(
+                EconomyResponse(fAmount, balance.first.toDouble(), EconomyResponse.ResponseType.SUCCESS, ""),
+                EconomyResponse(fAmount, balance.second.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+            )
+        }
+
+        return Pair(
+            EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, ""),
+            EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
+        )
     }
 
     override fun createPlayerAccount(player: OfflinePlayer): Boolean {
-        TODO("Not yet implemented")
+        return CreateWalletUseCase(walletRepository, historyRepository).execute(player.uniqueId)
     }
 
+
+    // 以下、あまり使わないメソッド
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
     )
     override fun hasAccount(playerName: String): Boolean {
         return hasAccount(Bukkit.getOfflinePlayer(playerName))
     }
 
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
     )
     override fun hasAccount(playerName: String, worldName: String): Boolean {
         return hasAccount(Bukkit.getOfflinePlayer(playerName))
@@ -85,16 +120,14 @@ class VaultProvider(
     }
 
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
     )
     override fun getBalance(playerName: String): Double {
         return getBalance(Bukkit.getOfflinePlayer(playerName))
     }
 
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
     )
     override fun getBalance(playerName: String, world: String): Double {
         return getBalance(Bukkit.getOfflinePlayer(playerName))
@@ -105,16 +138,14 @@ class VaultProvider(
     }
 
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
     )
     override fun has(playerName: String, amount: Double): Boolean {
         return has(Bukkit.getOfflinePlayer(playerName), amount)
     }
 
     @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
+        "Deprecated in Java", ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
     )
     override fun has(playerName: String, worldName: String, amount: Double): Boolean {
         return has(Bukkit.getOfflinePlayer(playerName), amount)
@@ -184,42 +215,54 @@ class VaultProvider(
         return createPlayerAccount(player)
     }
 
-    @Deprecated("Deprecated in Java")
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, \"\")",
+            "net.milkbowl.vault.economy.EconomyResponse",
+            "net.milkbowl.vault.economy.EconomyResponse"
+        )
+    )
     override fun createBank(name: String, player: String): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun createBank(name: String, player: OfflinePlayer): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun deleteBank(name: String): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun bankBalance(name: String): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun bankHas(name: String, amount: Double): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun bankWithdraw(name: String, amount: Double): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun bankDeposit(name: String, amount: Double): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
-    @Deprecated("Deprecated in Java")
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, \"\")",
+            "net.milkbowl.vault.economy.EconomyResponse",
+            "net.milkbowl.vault.economy.EconomyResponse"
+        )
+    )
     override fun isBankOwner(name: String, playerName: String): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     override fun isBankOwner(name: String, player: OfflinePlayer): EconomyResponse {
-        throw NotImplementedError()
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
     @Deprecated("Deprecated in Java")
