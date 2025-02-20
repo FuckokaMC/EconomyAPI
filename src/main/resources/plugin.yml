@@ -8,8 +8,6 @@ api-version: 1.21.4
 load: POSTWORLD
 depend:
   - DBConnector
-libraries:
-  - com.mysql:mysql-connector-j:9.1.0
 permissions:
   economyapi.commands.money.show:
     default: true
