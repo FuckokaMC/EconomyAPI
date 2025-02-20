@@ -4,7 +4,7 @@ import mc.fuckoka.dbconnector.Database
 import mc.fuckoka.economyapi.domain.model.MoneyTransaction
 import mc.fuckoka.economyapi.domain.repository.MoneyTransactionHistoryRepository
 import mc.fuckoka.economyapi.domain.repository.WalletRepository
-import java.util.UUID
+import java.util.*
 
 // ログ検索
 class RetrieveHistoryUseCase(
