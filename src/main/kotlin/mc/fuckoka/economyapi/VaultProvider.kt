@@ -93,7 +93,10 @@ class VaultProvider(
     }
 
     override fun createPlayerAccount(player: OfflinePlayer): Boolean {
-        return CreateWalletUseCase(walletRepository, historyRepository).execute(player.uniqueId)
+        return CreateWalletUseCase(walletRepository, historyRepository).execute(
+            player.uniqueId,
+            plugin.config.getInt("default-money")
+        )
     }
 
 
