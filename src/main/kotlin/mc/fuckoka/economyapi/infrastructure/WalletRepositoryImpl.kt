@@ -13,29 +13,29 @@ abstract class WalletRepositoryImpl : WalletRepository {
                 |SELECT
                 |    1
                 |FROM wallets
-                |WHERE wallets.id = ?
+                |WHERE wallets.owner = UUID_TO_BIN(?)
                 |LIMIT 1
             """.trimMargin()
         )
         val exists = stmt.use {
-            stmt.setLong(1, wallet.id.value)
+            stmt.setString(1, wallet.owner.toString())
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 resultSet.next()
             }
         }
         if (exists) {
-            val stmt1 = connection.prepareStatement("INSERT INTO wallets (owner, money) VALUES (UUID_TO_BIN(?), ?)")
-            stmt1.use {
-                stmt1.setString(1, wallet.owner.toString())
-                stmt1.setInt(2, wallet.money.value)
-                stmt.executeUpdate()
-            }
-        } else {
             val stmt1 = connection.prepareStatement("UPDATE wallets SET money = ? WHERE id = ?")
             stmt1.use {
                 stmt1.setInt(1, wallet.money.value)
                 stmt1.setLong(2, wallet.id.value)
+                stmt.executeUpdate()
+            }
+        } else {
+            val stmt1 = connection.prepareStatement("INSERT INTO wallets (owner, money) VALUES (UUID_TO_BIN(?), ?)")
+            stmt1.use {
+                stmt1.setString(1, wallet.owner.toString())
+                stmt1.setInt(2, wallet.money.value)
                 stmt.executeUpdate()
             }
         }
