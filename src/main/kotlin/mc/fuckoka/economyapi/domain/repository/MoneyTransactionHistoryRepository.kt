@@ -12,7 +12,7 @@ interface MoneyTransactionHistoryRepository {
      * @param offset 取得件数
      * @return
      */
-    fun find(id: WalletID, start:Long? = null, offset:Long? = null): List<MoneyTransaction>
+    fun find(id: WalletID, start: Long? = null, offset: Long? = null): List<MoneyTransaction>
 
     fun count(id: WalletID): Long
 

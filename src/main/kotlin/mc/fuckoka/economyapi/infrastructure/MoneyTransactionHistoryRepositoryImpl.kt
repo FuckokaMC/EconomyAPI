@@ -53,8 +53,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
                             if (to != null) WalletID(to) else null,
                             Money(resultSet.getInt("amount")),
                             LocalDateTime.parse(
-                                resultSet.getString("created_at"),
-                                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                                resultSet.getString("created_at"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                             ),
                             if (reason != null) Reason(reason) else null
                         )
