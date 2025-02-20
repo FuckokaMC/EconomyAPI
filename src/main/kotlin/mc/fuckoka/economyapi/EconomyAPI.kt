@@ -1,20 +1,20 @@
 package mc.fuckoka.economyapi
 
+import mc.fuckoka.economyapi.bukkit.command.MoneyCommand
 import mc.fuckoka.economyapi.bukkit.listener.PlayerJoinListener
+import mc.fuckoka.economyapi.infrastructure.ConsistentWalletRepositoryImpl
 import mc.fuckoka.economyapi.infrastructure.MoneyTransactionHistoryRepositoryImpl
-import mc.fuckoka.economyapi.infrastructure.SimpleWalletRepositoryImpl
 import org.bukkit.plugin.java.JavaPlugin
 
 class EconomyAPI : JavaPlugin() {
-    companion object {
-        lateinit var vault: VaultProvider
-            private set
-    }
+    lateinit var vault: VaultProvider
+        private set
 
     override fun onEnable() {
-        vault = VaultProvider(this, SimpleWalletRepositoryImpl(), MoneyTransactionHistoryRepositoryImpl())
         saveDefaultConfig()
+        vault = VaultProvider(this, ConsistentWalletRepositoryImpl(), MoneyTransactionHistoryRepositoryImpl())
 
-        server.pluginManager.registerEvents(PlayerJoinListener(), this)
+        getCommand("money")?.setExecutor(MoneyCommand())
+        server.pluginManager.registerEvents(PlayerJoinListener(vault), this)
     }
 }
