@@ -29,7 +29,7 @@ abstract class WalletRepositoryImpl : WalletRepository {
             val stmt1 = connection.prepareStatement("UPDATE wallets SET money = ? WHERE id = ?")
             stmt1.use {
                 stmt1.setInt(1, wallet.money.value)
-                stmt1.setLong(2, wallet.id.value)
+                stmt1.setInt(2, wallet.id.value)
                 stmt.executeUpdate()
             }
         } else {

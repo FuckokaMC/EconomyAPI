@@ -3,7 +3,7 @@ package mc.fuckoka.economyapi.domain.model
 import java.time.LocalDateTime
 
 open class MoneyTransaction(
-    val id: Long,
+    val id: Int,
     val from: WalletID?,
     val to: WalletID?,
     val amount: Money,

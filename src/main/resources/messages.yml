@@ -1,0 +1,16 @@
+money: [INFO] %sの所持金:%s%s
+give: §b[SUCCESS]§f %sの所持金を%s%s増やしました。(%sの所持金:%s%s)
+take: §b[SUCCESS]§f %sの所持金を%s%s減らしました。(%sの所持金:%s%s)
+pay: §b[SUCCESS]§f %sに%s%s支払いました。(現在の所持金:%s%s)
+no-money: §c[ERROR]§f 所持金が足りません。
+no-data: §c[ERROR]§f %sのデータは存在しません。
+error: §c[ERROR]§f 指定の操作を完了することができませんでした。(%s)
+help:
+  header: "[INFO] ------- EconomyAPI -------"
+  money: "[INFO] 表示: /money"
+  money-other: "[INFO] 表示: /money <プレイヤー名>"
+  pay: "[INFO] 支払: /money pay <プレイヤー名> <金額>"
+  give: "[INFO] 付与: /money give <プレイヤー名> <金額>"
+  take: "[INFO] 剝奪: /money take <プレイヤー名> <金額>"
+  log: "[INFO] 履歴: /money log"
+  log-other: "[INFO] 履歴: /money log <プレイヤー名>"

@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository {
-    override fun find(id: WalletID, start: Long?, offset: Long?): List<MoneyTransaction> {
+    override fun find(id: WalletID, start: Int?, offset: Int?): List<MoneyTransaction> {
         val result = mutableListOf<MoneyTransaction>()
 
         // 両方nullでなければページングする
@@ -33,22 +33,22 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
                  """.trimMargin() + if (isPaging) " LIMIT ?, ?;" else ";"
         )
         stmt.use {
-            stmt.setLong(1, id.value)
-            stmt.setLong(2, id.value)
+            stmt.setInt(1, id.value)
+            stmt.setInt(2, id.value)
             if (isPaging) {
-                stmt.setLong(3, start!!)
-                stmt.setLong(4, offset!!)
+                stmt.setInt(3, start!!)
+                stmt.setInt(4, offset!!)
             }
 
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 while (resultSet.next()) {
-                    val from = resultSet.getObject("player") as Long?
-                    val to = resultSet.getObject("payee") as Long?
+                    val from = resultSet.getObject("player") as Int?
+                    val to = resultSet.getObject("payee") as Int?
                     val reason = resultSet.getObject("reason") as String?
                     result.add(
                         MoneyTransaction(
-                            resultSet.getLong("id"),
+                            resultSet.getInt("id"),
                             if (from != null) WalletID(from) else null,
                             if (to != null) WalletID(to) else null,
                             Money(resultSet.getInt("amount")),
@@ -65,7 +65,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
         return result
     }
 
-    override fun count(id: WalletID): Long {
+    override fun count(id: WalletID): Int {
         val connection = Database.connection ?: throw SQLException()
 
         val stmt = connection.prepareStatement(
@@ -78,11 +78,11 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
         )
 
         stmt.use {
-            stmt.setLong(1, id.value)
-            stmt.setLong(2, id.value)
+            stmt.setInt(1, id.value)
+            stmt.setInt(2, id.value)
             val resultSet = stmt.executeQuery()
             resultSet.use {
-                return if (resultSet.next()) resultSet.getLong("COUNT(*)") else 0
+                return if (resultSet.next()) resultSet.getInt("COUNT(*)") else 0
             }
         }
     }

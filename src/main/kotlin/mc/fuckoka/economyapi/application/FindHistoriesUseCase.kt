@@ -11,7 +11,13 @@ class FindHistoriesUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
-    fun execute(player: UUID, start: Long? = null, offset: Long? = null): Pair<List<MoneyTransaction>, Long> {
+    /**
+     * @param player
+     * @param start
+     * @param offset
+     * @return <履歴, 全件数>
+     */
+    fun execute(player: UUID, start: Int? = null, offset: Int? = null): Pair<List<MoneyTransaction>, Int> {
         return Database.transaction {
             val connection = Database.connection
 

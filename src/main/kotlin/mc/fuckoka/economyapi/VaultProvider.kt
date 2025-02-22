@@ -1,6 +1,7 @@
 package mc.fuckoka.economyapi
 
 import mc.fuckoka.economyapi.application.*
+import mc.fuckoka.economyapi.domain.model.MoneyTransaction
 import mc.fuckoka.economyapi.domain.repository.MoneyTransactionHistoryRepository
 import mc.fuckoka.economyapi.domain.repository.WalletRepository
 import net.milkbowl.vault.economy.Economy
@@ -43,47 +44,77 @@ class VaultProvider(
     }
 
     override fun hasAccount(player: OfflinePlayer): Boolean {
-        return FindMoneyUseCase(walletRepository).execute(player.uniqueId) != null
+        try {
+            return FindMoneyUseCase(walletRepository).execute(player.uniqueId) != null
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+            return false
+        }
     }
 
     override fun getBalance(player: OfflinePlayer): Double {
-        return (FindMoneyUseCase(walletRepository).execute(player.uniqueId) ?: 0).toDouble()
+        try {
+            return (FindMoneyUseCase(walletRepository).execute(player.uniqueId) ?: -1).toDouble()
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+        }
+        return -1.0
     }
 
     override fun has(player: OfflinePlayer, amount: Double): Boolean {
-        val balance = FindMoneyUseCase(walletRepository).execute(player.uniqueId)
-        return if (balance == null) false else amount <= balance
+        try {
+            val balance = FindMoneyUseCase(walletRepository).execute(player.uniqueId)
+            return if (balance == null) false else floor(amount) <= balance
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+            return false
+        }
     }
 
     override fun withdrawPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        val fAmount = floor(amount)
-        val balance = TakeMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
-        if (balance != null) {
-            return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+        try {
+            val fAmount = floor(amount)
+            val balance =
+                TakeMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
+            if (balance != null) {
+                return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+            }
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
         }
-
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
     }
 
     override fun depositPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        val fAmount = floor(amount)
-        val balance = GiveMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
-        if (balance != null) {
-            return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+        try {
+            val fAmount = floor(amount)
+            val balance =
+                GiveMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
+            if (balance != null) {
+                return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+            }
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
         }
-
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
     }
 
     fun pay(from: OfflinePlayer, to: OfflinePlayer, amount: Double): Pair<EconomyResponse, EconomyResponse> {
-        val fAmount = floor(amount)
-        val balance =
-            PayMoneyUseCase(walletRepository, historyRepository).execute(from.uniqueId, to.uniqueId, fAmount.toInt())
-        if (balance != null) {
-            return Pair(
-                EconomyResponse(fAmount, balance.first.toDouble(), EconomyResponse.ResponseType.SUCCESS, ""),
-                EconomyResponse(fAmount, balance.second.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+        try {
+            val fAmount = floor(amount)
+            val balance = PayMoneyUseCase(walletRepository, historyRepository).execute(
+                from.uniqueId,
+                to.uniqueId,
+                fAmount.toInt()
             )
+            if (balance != null) {
+                return Pair(
+                    EconomyResponse(fAmount, balance.first.toDouble(), EconomyResponse.ResponseType.SUCCESS, ""),
+                    EconomyResponse(fAmount, balance.second.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+                )
+            }
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
         }
 
         return Pair(
@@ -93,10 +124,29 @@ class VaultProvider(
     }
 
     override fun createPlayerAccount(player: OfflinePlayer): Boolean {
-        return CreateWalletUseCase(walletRepository, historyRepository).execute(
-            player.uniqueId,
-            plugin.config.getInt("default-money")
-        )
+        try {
+            return CreateWalletUseCase(walletRepository, historyRepository).execute(
+                player.uniqueId,
+                plugin.config.getInt("default-money")
+            )
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+            return false
+        }
+    }
+
+    fun getHistories(player: OfflinePlayer, page: Int): Pair<List<MoneyTransaction>, Int>? {
+        try {
+            val result = FindHistoriesUseCase(walletRepository, historyRepository).execute(
+                player.uniqueId,
+                plugin.config.getInt("log-count") * (page - 1),
+                plugin.config.getInt("log-count")
+            )
+            return Pair(result.first, (result.second / plugin.config.getLong("log-count")).toInt())
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+        }
+        return null
     }
 
 

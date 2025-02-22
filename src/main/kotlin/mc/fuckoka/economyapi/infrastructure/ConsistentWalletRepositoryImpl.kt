@@ -28,12 +28,12 @@ class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
             """.trimMargin()
         )
         stmt.use {
-            stmt.setLong(1, id.value)
+            stmt.setInt(1, id.value)
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 while (resultSet.next()) {
                     return Wallet(
-                        WalletID(resultSet.getLong("id")),
+                        WalletID(resultSet.getInt("id")),
                         UUID.fromString(resultSet.getString("owner")),
                         Money(resultSet.getInt("money"))
                     )
@@ -64,7 +64,7 @@ class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
             resultSet.use {
                 while (resultSet.next()) {
                     return Wallet(
-                        WalletID(resultSet.getLong("id")),
+                        WalletID(resultSet.getInt("id")),
                         UUID.fromString(resultSet.getString("owner")),
                         Money(resultSet.getInt("money"))
                     )
