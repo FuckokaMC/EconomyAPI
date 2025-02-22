@@ -7,7 +7,7 @@ import mc.fuckoka.economyapi.domain.repository.WalletRepository
 import java.util.*
 
 // ログ検索
-class RetrieveHistoryUseCase(
+class FindHistoriesUseCase(
     private val walletRepository: WalletRepository,
     private val historyRepository: MoneyTransactionHistoryRepository
 ) {
