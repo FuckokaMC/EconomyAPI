@@ -15,7 +15,7 @@ class ValidateCommand : SubCommandBase("validate", "economyapi.commands.money.va
         command: Command,
         label: String,
         args: Array<out String>
-    ): MutableList<String>? {
+    ): MutableList<String> {
         val list = mutableListOf<String>()
         if (args.size == 1) {
             Bukkit.getOfflinePlayers().filter { it.name?.startsWith(args[0]) ?: false }.forEach {
