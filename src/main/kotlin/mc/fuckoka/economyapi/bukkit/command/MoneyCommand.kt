@@ -22,6 +22,7 @@ class MoneyCommand(private val plugin: EconomyAPI) : CommandBase() {
             sender.sendMessage(plugin.messages.getString("no-data")!!.format(args[0]))
             return true
         }
+
         val money = plugin.vault.format(plugin.vault.getBalance(target))
         sender.sendMessage(
             plugin.messages.getString("money")!!.format(target.name, money, plugin.vault.currencyNameSingular())
