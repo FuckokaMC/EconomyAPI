@@ -72,24 +72,30 @@ class VaultProvider(
     }
 
     override fun withdrawPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        try {
-            val fAmount = floor(amount)
-            val balance =
-                TakeMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
-            if (balance != null) {
-                return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
-            }
-        } catch (e: Exception) {
-            plugin.logger.warning(e.stackTraceToString())
-        }
-        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
+        return withdrawPlayer(player, amount, plugin.messages.getString("log.write.take")!!)
     }
 
     override fun depositPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
+        return depositPlayer(player, amount, plugin.messages.getString("log.write.give")!!)
+    }
+
+    override fun createPlayerAccount(player: OfflinePlayer): Boolean {
+        try {
+            return CreateWalletUseCase(walletRepository, historyRepository).execute(
+                player.uniqueId, plugin.config.getInt("default-money")
+            )
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+            return false
+        }
+    }
+
+    fun withdrawPlayer(player: OfflinePlayer, amount: Double, logMessage: String): EconomyResponse {
         try {
             val fAmount = floor(amount)
-            val balance =
-                GiveMoneyUseCase(walletRepository, historyRepository).execute(player.uniqueId, fAmount.toInt())
+            val balance = TakeMoneyUseCase(walletRepository, historyRepository).execute(
+                player.uniqueId, fAmount.toInt(), logMessage
+            )
             if (balance != null) {
                 return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
             }
@@ -99,13 +105,31 @@ class VaultProvider(
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
     }
 
-    fun pay(from: OfflinePlayer, to: OfflinePlayer, amount: Double): Pair<EconomyResponse, EconomyResponse> {
+    fun depositPlayer(player: OfflinePlayer, amount: Double, logMessage: String): EconomyResponse {
+        try {
+            val fAmount = floor(amount)
+            val balance = GiveMoneyUseCase(walletRepository, historyRepository).execute(
+                player.uniqueId, fAmount.toInt(), logMessage
+            )
+            if (balance != null) {
+                return EconomyResponse(fAmount, balance.toDouble(), EconomyResponse.ResponseType.SUCCESS, "")
+            }
+        } catch (e: Exception) {
+            plugin.logger.warning(e.stackTraceToString())
+        }
+        return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "")
+    }
+
+    fun pay(
+        from: OfflinePlayer, to: OfflinePlayer, amount: Double, logMessage: String? = null
+    ): Pair<EconomyResponse, EconomyResponse> {
         try {
             val fAmount = floor(amount)
             val balance = PayMoneyUseCase(walletRepository, historyRepository).execute(
                 from.uniqueId,
                 to.uniqueId,
-                fAmount.toInt()
+                fAmount.toInt(),
+                logMessage ?: plugin.messages.getString("log.write")!!.format(from.name, to.name)
             )
             if (balance != null) {
                 return Pair(
@@ -123,24 +147,10 @@ class VaultProvider(
         )
     }
 
-    override fun createPlayerAccount(player: OfflinePlayer): Boolean {
-        try {
-            return CreateWalletUseCase(walletRepository, historyRepository).execute(
-                player.uniqueId,
-                plugin.config.getInt("default-money")
-            )
-        } catch (e: Exception) {
-            plugin.logger.warning(e.stackTraceToString())
-            return false
-        }
-    }
-
     fun getHistories(player: OfflinePlayer, page: Int): Pair<List<MoneyTransaction>, Int>? {
         try {
             val result = FindHistoriesUseCase(walletRepository, historyRepository).execute(
-                player.uniqueId,
-                plugin.config.getInt("log-count") * (page - 1),
-                plugin.config.getInt("log-count")
+                player.uniqueId, plugin.config.getInt("log-count") * (page - 1), plugin.config.getInt("log-count")
             )
             return Pair(result.first, (result.second / plugin.config.getLong("log-count")).toInt())
         } catch (e: Exception) {
@@ -154,16 +164,12 @@ class VaultProvider(
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun hasAccount(playerName: String): Boolean {
         return hasAccount(Bukkit.getOfflinePlayer(playerName))
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("hasAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun hasAccount(playerName: String, worldName: String): Boolean {
         return hasAccount(Bukkit.getOfflinePlayer(playerName))
     }
@@ -172,16 +178,12 @@ class VaultProvider(
         return hasAccount(player)
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun getBalance(playerName: String): Double {
         return getBalance(Bukkit.getOfflinePlayer(playerName))
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("getBalance(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun getBalance(playerName: String, world: String): Double {
         return getBalance(Bukkit.getOfflinePlayer(playerName))
     }
@@ -190,16 +192,12 @@ class VaultProvider(
         return getBalance(player)
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun has(playerName: String, amount: Double): Boolean {
         return has(Bukkit.getOfflinePlayer(playerName), amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith("has(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun has(playerName: String, worldName: String, amount: Double): Boolean {
         return has(Bukkit.getOfflinePlayer(playerName), amount)
     }
@@ -208,18 +206,12 @@ class VaultProvider(
         return has(player, amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun withdrawPlayer(playerName: String, amount: Double): EconomyResponse {
         return withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun withdrawPlayer(playerName: String, worldName: String, amount: Double): EconomyResponse {
         return withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)
     }
@@ -228,18 +220,12 @@ class VaultProvider(
         return withdrawPlayer(player, amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun depositPlayer(playerName: String, amount: Double): EconomyResponse {
         return depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun depositPlayer(playerName: String, worldName: String, amount: Double): EconomyResponse {
         return depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)
     }
@@ -248,18 +234,12 @@ class VaultProvider(
         return depositPlayer(player, amount)
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("createPlayerAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun createPlayerAccount(playerName: String): Boolean {
         return createPlayerAccount(Bukkit.getOfflinePlayer(playerName))
     }
 
-    @Deprecated(
-        "Deprecated in Java",
-        ReplaceWith("createPlayerAccount(Bukkit.getOfflinePlayer(playerName))", "org.bukkit.Bukkit")
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun createPlayerAccount(playerName: String, worldName: String): Boolean {
         return createPlayerAccount(Bukkit.getOfflinePlayer(playerName))
     }
@@ -268,13 +248,7 @@ class VaultProvider(
         return createPlayerAccount(player)
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith(
-            "EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, \"\")",
-            "net.milkbowl.vault.economy.EconomyResponse",
-            "net.milkbowl.vault.economy.EconomyResponse"
-        )
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun createBank(name: String, player: String): EconomyResponse {
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
@@ -303,13 +277,7 @@ class VaultProvider(
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith(
-            "EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, \"\")",
-            "net.milkbowl.vault.economy.EconomyResponse",
-            "net.milkbowl.vault.economy.EconomyResponse"
-        )
-    )
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun isBankOwner(name: String, playerName: String): EconomyResponse {
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
@@ -318,7 +286,7 @@ class VaultProvider(
         return EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "")
     }
 
-    @Deprecated("Deprecated in Java")
+    @Deprecated("VaultAPI 1.4で非推奨")
     override fun isBankMember(name: String, playerName: String): EconomyResponse {
         throw NotImplementedError()
     }

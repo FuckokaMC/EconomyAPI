@@ -10,6 +10,7 @@ CREATE TABLE money_transactions (
     player INTEGER UNSIGNED,
     payee INTEGER UNSIGNED,
     amount INTEGER UNSIGNED NOT NULL,
+    reason VARCHAR(255),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (player) REFERENCES wallets(id),
     FOREIGN KEY (payee) REFERENCES wallets(id)

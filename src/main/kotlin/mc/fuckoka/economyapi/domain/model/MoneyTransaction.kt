@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 open class MoneyTransaction(
     val id: Int,
-    val from: WalletID?,
-    val to: WalletID?,
+    val from: Wallet?,
+    val to: Wallet?,
     val amount: Money,
     val datetime: LocalDateTime,
     val reason: Reason?
@@ -15,7 +15,7 @@ open class MoneyTransaction(
         require(from != null || to != null)
     }
 
-    class NewMoneyTransaction(from: WalletID?, to: WalletID?, amount: Money, reason: Reason? = null) : MoneyTransaction(
+    class NewMoneyTransaction(from: Wallet?, to: Wallet?, amount: Money, reason: Reason? = null) : MoneyTransaction(
         0, from, to, amount, LocalDateTime.now(), reason
     )
 }
