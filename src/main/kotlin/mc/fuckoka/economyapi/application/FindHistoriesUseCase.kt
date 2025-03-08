@@ -22,7 +22,7 @@ class FindHistoriesUseCase(
             val connection = Database.connection
 
             val wallet = walletRepository.findBy(player) ?: return@transaction Pair(listOf<MoneyTransaction>(), 0)
-            val moneyTransactions = historyRepository.find(wallet.id, start, offset)
+            val moneyTransactions = historyRepository.find(wallet, start, offset)
             val count = historyRepository.count(wallet.id)
 
             return@transaction Pair(moneyTransactions, count)
