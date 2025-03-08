@@ -28,9 +28,14 @@ class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "econom
 
         sender.sendMessage(plugin.messages.getString("log.read.header")!!.format(page, histories.second))
         histories.first.forEach {
-            sender.sendMessage(plugin.messages.getString("log.write.content")!!.format())
+            sender.sendMessage(plugin.messages.getString("log.write.content")!!.format(
+                it.datetime,
+                it.datetime,
+                it.reason?.value,
+                if (it.from?.owner == target.uniqueId) "+" else "-",
+                it.amount.value
+            ))
         }
-
 
         return false
     }
@@ -40,7 +45,13 @@ class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "econom
         command: Command,
         label: String,
         args: Array<out String>
-    ): MutableList<String>? {
-        TODO("Not yet implemented")
+    ): MutableList<String> {
+        val list = mutableListOf<String>()
+        if (args.size == 1 && sender.hasPermission("economyapi.commands.money.log.other")) {
+            Bukkit.getOfflinePlayers().filter { it.name?.startsWith(args[0]) ?: false }.forEach {
+                list.add(it.name!!)
+            }
+        }
+        return list
     }
 }
