@@ -1,11 +1,13 @@
 package mc.fuckoka.economyapi
 
-import mc.fuckoka.economyapi.bukkit.command.MoneyCommand
+import mc.fuckoka.economyapi.bukkit.command.*
 import mc.fuckoka.economyapi.bukkit.listener.PlayerJoinListener
 import mc.fuckoka.economyapi.infrastructure.ConsistentWalletRepositoryImpl
 import mc.fuckoka.economyapi.infrastructure.MoneyTransactionHistoryRepositoryImpl
+import net.milkbowl.vault.economy.Economy
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 
 class EconomyAPI : JavaPlugin() {
@@ -20,7 +22,18 @@ class EconomyAPI : JavaPlugin() {
         messages = YamlConfiguration()
         messages.setDefaults(YamlConfiguration.loadConfiguration(getResource("messages.yml")!!.reader()))
 
-        getCommand("money")?.setExecutor(MoneyCommand(this))
+        server.servicesManager.register(Economy::class.java, vault, this, ServicePriority.Normal)
+
+        val moneyCommand = MoneyCommand(this)
+        moneyCommand.registerSubCommands(
+            GiveCommand(this),
+            HelpCommand(this),
+            LogCommand(this),
+            PayCommand(this),
+            TakeCommand(this),
+            ValidateCommand(this)
+        )
+        getCommand("money")?.setExecutor(moneyCommand)
         server.pluginManager.registerEvents(PlayerJoinListener(vault), this)
     }
 }
