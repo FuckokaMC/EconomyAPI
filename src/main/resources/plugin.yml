@@ -8,6 +8,9 @@ api-version: 1.21.4
 load: POSTWORLD
 depend:
   - DBConnector
+  - Vault
+libraries:
+  - mc.fuckoka:command-framework:1.0.1
 permissions:
   economyapi.commands.money.show:
     default: true
