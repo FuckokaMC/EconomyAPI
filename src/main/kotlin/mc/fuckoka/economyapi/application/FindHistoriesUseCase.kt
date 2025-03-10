@@ -19,8 +19,6 @@ class FindHistoriesUseCase(
      */
     fun execute(player: UUID, start: Int? = null, offset: Int? = null): Pair<List<MoneyTransaction>, Int> {
         return Database.transaction {
-            val connection = Database.connection
-
             val wallet = walletRepository.findBy(player) ?: return@transaction Pair(listOf<MoneyTransaction>(), 0)
             val moneyTransactions = historyRepository.find(wallet, start, offset)
             val count = historyRepository.count(wallet.id)
