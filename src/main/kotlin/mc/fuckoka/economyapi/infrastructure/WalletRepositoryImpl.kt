@@ -7,7 +7,7 @@ import java.sql.SQLException
 
 abstract class WalletRepositoryImpl : WalletRepository {
     override fun store(wallet: Wallet) {
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
         // UUIDで存在確認しているのはUUIDがユニークであるため(idで確認してもuuidが重複する可能性があるため)
         val stmt = connection.prepareStatement(
             """

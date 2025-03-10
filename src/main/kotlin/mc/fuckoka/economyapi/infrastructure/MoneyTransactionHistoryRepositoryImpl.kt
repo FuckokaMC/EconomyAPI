@@ -15,7 +15,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
         // 両方nullでなければページングする
         val isPaging = start != null && offset != null
 
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
         val stmt = connection.prepareStatement(
             """
                     |SELECT
@@ -70,7 +70,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
     }
 
     override fun count(id: WalletID): Int {
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
 
         val stmt = connection.prepareStatement(
             """
@@ -92,7 +92,7 @@ class MoneyTransactionHistoryRepositoryImpl : MoneyTransactionHistoryRepository 
     }
 
     override fun store(event: MoneyTransaction) {
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
 
         val stmt = connection.prepareStatement(
             """

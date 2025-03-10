@@ -9,7 +9,7 @@ import java.util.*
 
 class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
     override fun find(id: WalletID): Wallet? {
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
         val stmt = connection.prepareStatement(
             """
                 |SELECT
@@ -45,7 +45,7 @@ class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
     }
 
     override fun findBy(owner: UUID): Wallet? {
-        val connection = Database.connection ?: throw SQLException()
+        val connection = Database.getConnection() ?: throw SQLException()
         val stmt = connection.prepareStatement(
             """
                 |SELECT
