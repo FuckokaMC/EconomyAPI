@@ -37,7 +37,7 @@ abstract class WalletRepositoryImpl : WalletRepository {
             stmt1.use {
                 stmt1.setString(1, wallet.owner.toString())
                 stmt1.setInt(2, wallet.money.value)
-                stmt.executeUpdate()
+                stmt1.executeUpdate()
             }
         }
     }
