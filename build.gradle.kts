@@ -41,7 +41,7 @@ dependencies {
         exclude("org.bukkit", "bukkit")
     }
     compileOnly("mc.fuckoka:command-framework:1.0.2")
-    compileOnly("mc.fuckoka:db-connector:1.2.1")
+    compileOnly("mc.fuckoka:db-connector:1.2.2")
 }
 
 val targetJavaVersion = 21
