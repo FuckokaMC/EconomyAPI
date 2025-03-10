@@ -22,7 +22,7 @@ class TakeCommand(private val plugin: EconomyAPI) : SubCommandBase("take", "econ
         }
 
         val response = plugin.vault.withdrawPlayer(target, amount.toDouble())
-        if (response.type == EconomyResponse.ResponseType.FAILURE) {
+        if (response.type == EconomyResponse.ResponseType.SUCCESS) {
             sender.sendMessage(
                 plugin.messages.getString("take")!!.format(
                     target.name,
