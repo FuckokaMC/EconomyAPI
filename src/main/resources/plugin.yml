@@ -4,13 +4,14 @@ main: mc.fuckoka.economyapi.EconomyAPI
 description: 経済プラグイン
 author: deceitya
 website: https://github.com/FuckokaMC/EconomyAPI
-api-version: 1.21.4
+api-version: 1.21
 load: POSTWORLD
 depend:
+  - CommandFramework
   - DBConnector
   - Vault
 libraries:
-  - mc.fuckoka:command-framework:1.0.1
+  - org.jetbrains.kotlin:kotlin-stdlib:2.1.10
 permissions:
   economyapi.commands.money.show:
     default: true

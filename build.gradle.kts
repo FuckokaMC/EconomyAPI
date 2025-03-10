@@ -1,19 +1,19 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
-    `maven-publish`
+    kotlin("jvm") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    `maven-publish`
 }
 
 group = "mc.fuckoka"
 version = "1.0-SNAPSHOT"
 
-val mcVersion = "1.21.4"
-
 repositories {
     mavenCentral()
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/") {
+        name = "papermc-repo"
+    }
+    maven("https://oss.sonatype.org/content/groups/public/") {
+        name = "sonatype"
     }
     maven {
         url = uri("https://jitpack.io")
@@ -35,21 +35,22 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude("org.bukkit", "bukkit")
     }
-    compileOnly("mc.fuckoka:command-framework:1.0.1")
-    compileOnly("mc.fuckoka:db-connector:1.0.0")
-    testImplementation(kotlin("test"))
+    compileOnly("mc.fuckoka:command-framework:1.0.2")
+    compileOnly("mc.fuckoka:db-connector:1.2.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
+val targetJavaVersion = 21
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(targetJavaVersion)
+}
+
+tasks.build {
+    dependsOn("shadowJar")
 }
 
 publishing {
@@ -64,6 +65,7 @@ publishing {
         }
         publications {
             register<MavenPublication>("gpr") {
+                artifactId = "economy-api"
                 from(components["java"])
             }
         }
