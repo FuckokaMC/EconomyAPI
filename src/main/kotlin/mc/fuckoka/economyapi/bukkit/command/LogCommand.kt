@@ -28,13 +28,15 @@ class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "econom
 
         sender.sendMessage(plugin.messages.getString("log.read.header")!!.format(page, histories.second))
         histories.first.forEach {
-            sender.sendMessage(plugin.messages.getString("log.write.content")!!.format(
-                it.datetime,
-                it.datetime,
-                it.reason?.value,
-                if (it.from?.owner == target.uniqueId) "+" else "-",
-                it.amount.value
-            ))
+            sender.sendMessage(
+                plugin.messages.getString("log.write.content")!!.format(
+                    it.datetime,
+                    it.datetime,
+                    it.reason?.value,
+                    if (it.from?.owner == target.uniqueId) "+" else "-",
+                    it.amount.value
+                )
+            )
         }
 
         return false
