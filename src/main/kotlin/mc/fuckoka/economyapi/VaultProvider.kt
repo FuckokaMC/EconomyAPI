@@ -32,7 +32,7 @@ class VaultProvider(
     }
 
     override fun format(amount: Double): String {
-        return "%,d".format(amount)
+        return "%,.0f".format(amount)
     }
 
     override fun currencyNamePlural(): String {
