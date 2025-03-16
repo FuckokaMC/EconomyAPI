@@ -1,4 +1,10 @@
 # 初期所持金
 default-money: 1000
+
 # ログの表示数
 log-count: 5
+
+# 所持金の計算方法(normal / history)   取得結果は変わらない(はず)なので大体の場合はnormalでよい
+# normal  : 動作がhistoryと比べて軽い ただし整合性が甘い(かも)
+# history : 取引履歴から所持金を計算するため動作がnormalより重い ただし整合性が取れる
+repo: normal

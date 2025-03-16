@@ -2,6 +2,7 @@ package mc.fuckoka.economyapi
 
 import mc.fuckoka.economyapi.bukkit.command.*
 import mc.fuckoka.economyapi.bukkit.listener.PlayerJoinListener
+import mc.fuckoka.economyapi.infrastructure.ConsistentWalletRepositoryImpl
 import mc.fuckoka.economyapi.infrastructure.MoneyTransactionHistoryRepositoryImpl
 import mc.fuckoka.economyapi.infrastructure.WalletRepositoryImpl
 import net.milkbowl.vault.economy.Economy
@@ -18,7 +19,12 @@ class EconomyAPI : JavaPlugin() {
 
     override fun onEnable() {
         saveDefaultConfig()
-        vault = VaultProvider(this, WalletRepositoryImpl(), MoneyTransactionHistoryRepositoryImpl())
+
+        val repository = when (config.getString("repo")) {
+            "history" -> ConsistentWalletRepositoryImpl()
+            else -> WalletRepositoryImpl()
+        }
+        vault = VaultProvider(this, repository, MoneyTransactionHistoryRepositoryImpl())
         messages = YamlConfiguration()
         messages.setDefaults(YamlConfiguration.loadConfiguration(getResource("messages.yml")!!.reader()))
 
