@@ -10,12 +10,12 @@ class HelpCommand(private val plugin: EconomyAPI) : SubCommandBase("help", "econ
         private val messages = mapOf(
             "economyapi.commands.money.help" to "help.header",
             "economyapi.commands.money.show" to "help.money",
-            "economyapi.commands.money.show.other" to "help.money.other",
+            "economyapi.commands.money.show.other" to "help.money-other",
             "economyapi.commands.money.pay" to "help.pay",
             "economyapi.commands.money.give" to "help.give",
             "economyapi.commands.money.take" to "help.take",
             "economyapi.commands.money.log" to "help.log",
-            "economyapi.commands.money.log.other" to "help.log.other"
+            "economyapi.commands.money.log.other" to "help.log-other"
         )
     }
 
