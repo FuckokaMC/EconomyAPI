@@ -21,6 +21,7 @@ class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "econom
                         page = 1
                     }
                 }
+
                 2 -> {
                     target = Bukkit.getOfflinePlayer(args[0])
                     page = args.getOrNull(1)?.toIntOrNull() ?: 1
