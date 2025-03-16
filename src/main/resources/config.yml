@@ -1,4 +1,4 @@
 # 初期所持金
 default-money: 1000
 # ログの表示数
-log-count: 10
+log-count: 5
