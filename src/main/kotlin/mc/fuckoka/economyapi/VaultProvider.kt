@@ -129,7 +129,7 @@ class VaultProvider(
                 from.uniqueId,
                 to.uniqueId,
                 fAmount.toInt(),
-                logMessage ?: plugin.messages.getString("log.write")!!.format(from.name, to.name)
+                logMessage ?: plugin.messages.getString("log.write.pay")!!.format(from.name, to.name)
             )
             if (balance != null) {
                 return Pair(
