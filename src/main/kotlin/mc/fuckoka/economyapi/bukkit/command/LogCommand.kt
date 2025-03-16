@@ -42,7 +42,7 @@ class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "econom
                     it.datetime,
                     it.datetime,
                     it.reason?.value ?: "",
-                    if (it.from?.owner == target.uniqueId) "+" else "-",
+                    if (it.from?.owner == target.uniqueId) "-" else "+",
                     plugin.vault.format(it.amount.value.toDouble()),
                     plugin.vault.currencyNameSingular()
                 )
