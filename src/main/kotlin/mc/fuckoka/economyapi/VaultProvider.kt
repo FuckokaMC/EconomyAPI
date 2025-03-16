@@ -152,7 +152,7 @@ class VaultProvider(
             val result = FindHistoriesUseCase(walletRepository, historyRepository).execute(
                 player.uniqueId, plugin.config.getInt("log-count") * (page - 1), plugin.config.getInt("log-count")
             )
-            return Pair(result.first, (result.second / plugin.config.getLong("log-count")).toInt())
+            return Pair(result.first, (result.second / plugin.config.getLong("log-count")).toInt() + 1)
         } catch (e: Exception) {
             plugin.logger.warning(e.stackTraceToString())
         }
