@@ -11,35 +11,45 @@ import org.bukkit.entity.Player
 class LogCommand(private val plugin: EconomyAPI) : SubCommandBase("log", "economyapi.commands.money.log") {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         var target: OfflinePlayer? = if (sender is Player) sender else null
-        if (args.getOrNull(0) != null && sender.hasPermission("economyapi.commands.money.log.other")) {
-            target = Bukkit.getOfflinePlayer(args[0])
-        }
-        if (target == null) {
-            return false
+        var page = args.getOrNull(0)?.toIntOrNull() ?: 1
+
+        if (sender.hasPermission("economyapi.commands.money.log.other")) {
+            when (args.size) {
+                1 -> {
+                    if (args.getOrNull(0)?.toIntOrNull() == null) {
+                        target = Bukkit.getOfflinePlayer(args[0])
+                        page = 1
+                    }
+                }
+                2 -> {
+                    target = Bukkit.getOfflinePlayer(args[0])
+                    page = args.getOrNull(1)?.toIntOrNull() ?: 1
+                }
+            }
         }
 
-        if (!plugin.vault.hasAccount(target)) {
+        if (target == null || !plugin.vault.hasAccount(target)) {
             sender.sendMessage(plugin.messages.getString("no-data")!!.format(args[0]))
             return true
         }
 
-        val page = args.getOrNull(1)?.toIntOrNull() ?: return false
         val histories = plugin.vault.getHistories(target, page)!!
 
         sender.sendMessage(plugin.messages.getString("log.read.header")!!.format(page, histories.second))
         histories.first.forEach {
             sender.sendMessage(
-                plugin.messages.getString("log.write.content")!!.format(
+                plugin.messages.getString("log.read.content")!!.format(
                     it.datetime,
                     it.datetime,
-                    it.reason?.value,
+                    it.reason?.value ?: "",
                     if (it.from?.owner == target.uniqueId) "+" else "-",
-                    it.amount.value
+                    plugin.vault.format(it.amount.value.toDouble()),
+                    plugin.vault.currencyNameSingular()
                 )
             )
         }
 
-        return false
+        return true
     }
 
     override fun onTabComplete(
