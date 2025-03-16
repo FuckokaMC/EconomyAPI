@@ -20,5 +20,5 @@ help:
   pay: "支払: /money pay <プレイヤー名> <金額>"
   give: "付与: /money give <プレイヤー名> <金額>"
   take: "剝奪: /money take <プレイヤー名> <金額>"
-  log: "履歴: /money log"
-  log-other: "履歴: /money log <プレイヤー名>"
+  log: "履歴: /money log [ページ数]"
+  log-other: "履歴: /money log <プレイヤー名> [ページ数]"
