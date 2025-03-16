@@ -15,20 +15,17 @@ class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
                 |SELECT
                 |    wallets.id AS id,
                 |    BIN_TO_UUID(wallets.owner) AS owner,
-                |    currents.money AS money
-                |FROM (
-                |    SELECT
-                |        player,
-                |        (SELECT SUM(amount) FROM money_transactions AS mt2 WHERE mt2.payee = mt1.player) - SUM(amount) AS money
-                |    FROM money_transactions AS mt1
-                |    WHERE player = ?
-                |    GROUP BY player
-                |) AS currents
-                |INNER JOIN wallets ON currents.player = wallets.id
+                |    (
+                |        (SELECT SUM(mt.amount) FROM money_transactions AS mt WHERE mt.payee = wallets.id) -
+                |        (SELECT SUM(mt.amount) FROM money_transactions AS mt WHERE mt.player = wallets.id)
+                |    ) AS money
+                |FROM wallets
+                |WHERE id = ?
             """.trimMargin()
         )
         stmt.use {
             stmt.setInt(1, id.value)
+
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 while (resultSet.next()) {
@@ -49,17 +46,19 @@ class ConsistentWalletRepositoryImpl : WalletRepositoryImpl() {
         val stmt = connection.prepareStatement(
             """
                 |SELECT
-                |    mt1.player AS id,
+                |    wallets.id AS id,
                 |    BIN_TO_UUID(wallets.owner) AS owner,
-                |    (SELECT SUM(amount) FROM money_transactions AS mt2 WHERE mt2.payee = mt1.player) - SUM(amount) AS money
-                |FROM money_transactions AS mt1
-                |INNER JOIN wallets ON mt1.player = wallets.id
-                |WHERE wallets.owner = UUID_TO_BIN(?)
-                |GROUP BY mt1.player, wallets.owner
+                |    (
+                |        (SELECT SUM(mt.amount) FROM money_transactions AS mt WHERE mt.payee = wallets.id) -
+                |        (SELECT SUM(mt.amount) FROM money_transactions AS mt WHERE mt.player = wallets.id)
+                |    ) AS money
+                |FROM wallets
+                |WHERE owner = UUID_TO_BIN(?)
             """.trimMargin()
         )
         stmt.use {
             stmt.setString(1, owner.toString())
+
             val resultSet = stmt.executeQuery()
             resultSet.use {
                 while (resultSet.next()) {
