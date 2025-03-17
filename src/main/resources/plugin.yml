@@ -1,5 +1,5 @@
 name: EconomyAPI
-version: 1.0.0
+version: 0.1.0
 main: mc.fuckoka.economyapi.EconomyAPI
 description: 経済プラグイン
 author: deceitya
